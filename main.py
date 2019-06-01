@@ -68,6 +68,12 @@ def save_and_update():
     nnet.save(modelname_e.get())
     update_list_models()
 
+def load_and_update():
+    global nnet
+    global model_choice
+    nnet.load(model_choice.get())
+    update_net()
+
 def create_window():
     global nnet
     global x_train, y_train
@@ -108,7 +114,7 @@ def create_window():
 
     load_b = Button(master,
             text = "load",
-            command = lambda: nnet.load(model_choice.get()))
+            command = load_and_update)
     load_b.grid(row = 0, column = 4)
 
     # initialize empty list for layer repr
