@@ -26,8 +26,11 @@ def update_net():
     n_row = 2
     ix = 0
     for l in nnet.layers:
-        frame = Frame(master, bg = '#fafafa')
-        frame.grid(row = n_row)
+        frame = Frame(master,
+                bg = '#2196F3',
+                padx = 32,
+                pady = 4)
+        frame.grid(row = n_row, columnspan = 3, pady = 2)
         layer_repr.append(frame)
 
         label = Label(frame, text = l.layer_type, bg = frame['bg'])
@@ -81,8 +84,8 @@ def create_window():
     
     master = Tk()
     master.title("Chimera")
-    master.minsize(600,400)
-    master.geometry("600x400")
+    master.minsize(960,720)
+    master.geometry("960x720")
     master['bg'] = '#fafafa'
 
     train_button = Button(master,
