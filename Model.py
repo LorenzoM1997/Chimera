@@ -38,8 +38,6 @@ class Chimera(object):
             loss=self.loss,
             metrics=['accuracy'])
 
-        self.model.summary()
-
     def add_layer(self, layer_type, ix=None):
 
         if ix == None:

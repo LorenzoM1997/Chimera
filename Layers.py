@@ -32,8 +32,6 @@ class Strato(object):
         else:
             self.load(name)
 
-        print(self.name)
-
     def freeze(self):
         self.layer.trainable = True
 
