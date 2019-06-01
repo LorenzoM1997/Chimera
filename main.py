@@ -7,14 +7,16 @@ def update_net():
     global layer_repr
 
     for label in layer_repr:
-        label.pack_forget()
+        label.grid_forget()
 
     layer_repr = []
 
+    n_row = 2
     for l in nnet.layers:
-        label = Label(master, text = l.layer_type)
+        label = Label(master, text = l.layer_type, bg = '#fafafa')
         layer_repr.append(label)
-        label.pack()
+        label.grid(row = n_row)
+        n_row += 1
 
 def add_layer(layer_type):
     global nnet
@@ -31,16 +33,26 @@ def create_window():
     master.title("Chimera")
     master.minsize(600,400)
     master.geometry("600x400")
+    master['bg'] = '#fafafa'
 
     train_button = Button(master,
             text="Train network",
             command = lambda: nnet.fit(x_train, y_train))
-    train_button.pack()
+    train_button.grid(row = 0, column = 0)
 
     addDense_b = Button(master,
             text = "Add Dense",
             command = lambda: add_layer("Dense"))
-    addDense_b.pack()
+    addDense_b.grid (row = 1)
+
+    modelname_e = Entry(master)
+    modelname_e.grid(row = 0, column = 1)
+
+    save_b = Button(master,
+            text = "Save",
+            state = DISABLED,
+            command = nnet.save())
+    save_b.grid(row = 0, column = 2)
 
     # initialize empty list for layer repr
     layer_repr = []

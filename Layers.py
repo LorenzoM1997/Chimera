@@ -31,6 +31,7 @@ class Strato(object):
                 self.path = os.path.join("layers", self.name)
         else:
             self.load(name)
+            self.name = name
 
     def freeze(self):
         self.layer.trainable = True
@@ -39,7 +40,7 @@ class Strato(object):
         self.layer.trainable = False
 
     def save(self):
-        raise NotImplemented()
+        pass
 
     def load(self, name):
         raise NotImplemented()

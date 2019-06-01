@@ -1,4 +1,6 @@
 import tensorflow as tf
+import os
+import pickle
 
 from tensorflow.keras.layers import Conv2D, Dense, Flatten
 from tensorflow.keras import Model
@@ -76,3 +78,31 @@ class Chimera(object):
 
     def predict(self, x):
         return self.model.predict(x)
+
+    def load(self, name):
+        if not os.path.isdir("models"):
+            os.mkdir("models")
+        
+        modelPath = os.path.join("models", name)
+        if os.path.exists(modelPath):
+            pickle.load( layerList, open( modelpath, "rb" ))
+
+        for l in layerList:
+            print(l)
+
+
+    def save(self):
+        filename = "network"
+
+        if not os.path.isdir("models"):
+            os.mkdir("models")
+
+        layerList = []
+
+        for l in self.layers:
+            l.save()
+            layerList.append(l.name)
+
+        modelpath = os.path.join("models", filename)
+        pickle.dump(layerList, open(modelpath, "wb"))
+
