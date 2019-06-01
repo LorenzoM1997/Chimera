@@ -2,9 +2,13 @@ import os
 import random
 import string
 import tensorflow as tf
+import numpy as np
 
 from tensorflow.keras.layers import Layer, Dense, Flatten, Conv2D
 
+def check_dir():
+    if not os.path.isdir("layers"):
+        os.mkdir("layers")
 
 class Strato(object):
     def __init__(self, name=None, layer_type="Dense"):
@@ -17,9 +21,8 @@ class Strato(object):
 
         self.frozen = False
 
-        if not os.path.isdir("layers"):
-            os.mkdir("layers")
-
+        check_dir()
+        
         if name == None:
             self.name = ''.join(random.choice(
                 string.ascii_lowercase + string.digits) for _ in range(16))
@@ -30,20 +33,29 @@ class Strato(object):
                     string.ascii_lowercase + string.digits) for _ in range(16))
                 self.path = os.path.join("layers", self.name)
         else:
-            self.load(name)
             self.name = name
+            self.load()
 
     def freeze(self):
-        self.layer.trainable = True
-
-    def unfreeze(self):
         self.layer.trainable = False
 
-    def save(self):
-        pass
+    def unfreeze(self):
+        self.layer.trainable = True
 
-    def load(self, name):
-        raise NotImplemented()
+    def save(self):
+        weights = self.layer.get_weights()
+        check_dir()
+        filename = os.path.join("layers", self.name)
+
+        np.save(filename, weights)
+
+    def load(self):
+        check_dir()
+        filename = os.path.join("layers", self.name)
+        filename += ".npy"
+        weights = np.load(filename)
+
+        self.layer.set_weights(weights)
 
     def resetWeights(self):
         raise NotImplemented()

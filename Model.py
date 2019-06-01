@@ -18,6 +18,7 @@ class Chimera(object):
         self.outputShape = None
 
         self.layers = []
+        self.filename = ""
 
     def build(self):
         # define input layer
@@ -83,16 +84,21 @@ class Chimera(object):
         if not os.path.isdir("models"):
             os.mkdir("models")
         
-        modelPath = os.path.join("models", name)
-        if os.path.exists(modelPath):
-            pickle.load( layerList, open( modelpath, "rb" ))
+        modelpath = os.path.join("models", name)
+        if os.path.exists(modelpath):
+            layerList = pickle.load(open( modelpath, "rb" ))
+            self.layers = []
+            for l in layerList:
+                s = Strato(l)
+                self.layers.append(s)
 
-        for l in layerList:
-            print(l)
+    def save(self, name = ""):
 
-
-    def save(self):
-        filename = "network"
+        if name != "":
+            self.filename = name
+        
+        if self.filename == "":
+            raise ValueError("Model name not defined")
 
         if not os.path.isdir("models"):
             os.mkdir("models")
@@ -103,6 +109,6 @@ class Chimera(object):
             l.save()
             layerList.append(l.name)
 
-        modelpath = os.path.join("models", filename)
+        modelpath = os.path.join("models", self.filename)
         pickle.dump(layerList, open(modelpath, "wb"))
 
