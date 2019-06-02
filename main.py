@@ -31,20 +31,38 @@ def update_net():
                 bg = '#2196F3',
                 padx = 32,
                 pady = 4)
-        frame.grid(row = n_row, columnspan = 3, pady = 2)
+        frame.grid(row = n_row, column= 2, columnspan = 3, pady = 2)
         layer_repr.append(frame)
 
-        label = Label(frame, text = l.layer_type, bg = frame['bg'])
+        # label for layer type
+        label = Label(frame, text = l.layer_type,
+                bg = frame['bg'],
+                padx = 4,
+                font = "Arial 14")
         label.grid(row = n_row, column = 1)
 
+        # label for layer shape
+        shape_l = Label(frame, text = l.shape,
+                bg = frame['bg'],
+                padx = 8,
+                font = "Arial 14")
+        shape_l.grid(row = n_row, column = 2)
+
+        # freeze/unfreeze button
         freeze_b_text = StringVar()
         if l.layer.trainable:
             freeze_b_text = "Freeze"
         else:
             freeze_b_text = "Unfreeze"
 
-        freeze_b = Button(frame, text = freeze_b_text, command = lambda ix=ix: switch_freeze(ix))
-        freeze_b.grid(row = n_row, column = 2)
+        freeze_b = Button(frame,
+                bg = '#0D47A1',
+                foreground = '#FFFFFF',
+                borderwidth = 0,
+                text = freeze_b_text,
+                font = "Arial 12",
+                command = lambda ix=ix: switch_freeze(ix),)
+        freeze_b.grid(row = n_row, column = 3)
 
         n_row += 1
         ix += 1
@@ -88,6 +106,11 @@ def create_window():
     master.minsize(960,720)
     master.geometry("960x720")
     master['bg'] = '#fafafa'
+    master.columnconfigure(0, weight = 0)
+    master.columnconfigure(1, weight = 0)
+    master.columnconfigure(2, weight = 1)
+    master.columnconfigure(3, weight = 1)
+    master.columnconfigure(4, weight = 1)
 
     menubar = Menu(master)
     importMenu = Menu(menubar, tearoff = 0)
@@ -99,18 +122,24 @@ def create_window():
 
     master.config(menu = menubar)
 
+    model_l = Label(master, text = "Model name:",
+            bg = master['bg'])
+    model_l.grid(row = 0, column = 0, sticky = "E", padx = 4)
+
+    # entry for model name
     global modelname_e
     modelname_e = Entry(master)
-    modelname_e.grid(row = 0, column = 1)
+    modelname_e.grid(row = 0, column = 1, sticky = "W")
 
+    # save button
     savephoto = PhotoImage(file="save.png")
-
     save_b = Button(master,
             image = savephoto,
             text = "save",
             command = save_and_update)
-    save_b.grid(row = 0, column = 2)
+    save_b.grid(row = 0, column = 2, sticky = "W", padx = 4)
 
+    # model menu
     mypath = "models"
     models = [f for f in listdir(mypath) if isfile(join(mypath, f))]
     if models == []:
@@ -119,20 +148,28 @@ def create_window():
     model_choice = StringVar(master)
     model_choice.set(models[0])
     menu_models = OptionMenu(master, model_choice, *models)
-    menu_models.grid(row = 0, column = 3)
+    menu_models.grid(row = 1, column = 1, sticky = "W")
 
+    # load button
     load_b = Button(master,
             text = "load",
             command = load_and_update)
-    load_b.grid(row = 0, column = 4)
+    load_b.grid(row = 1, column = 2, sticky = "W", padx = 4)
 
     # initialize empty list for layer repr
     layer_repr = []
 
     addDense_b = Button(master,
             text = "Add Dense",
+            width = 15,
             command = lambda: add_layer("Dense"))
-    addDense_b.grid (row = 1)
+    addDense_b.grid (row = 2, column = 0)
+    addConv1D_b = Button(master,
+            text = "Add Conv1D",
+            width = 15,
+            command = lambda: add_layer("Conv1D"))
+    addConv1D_b.grid(row = 3, column = 0)
+
 
     update_net()
     mainloop()

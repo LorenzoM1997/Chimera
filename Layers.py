@@ -39,6 +39,7 @@ class Strato(object):
             self.layer = Dense(
                 units=4,
                 activation='relu')
+        self.shape = 4
 
     def freeze(self):
         self.layer.trainable = False
