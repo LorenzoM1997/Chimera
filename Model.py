@@ -66,6 +66,19 @@ class Chimera(object):
             l = self.layers.pop(ix)
             self.layers.insert(ix - 1, l)
 
+    def move_down(self, ix):
+        if ix < 0 or ix >= len(self.layers) -1:
+            raise ValueError("Layer index out of bound")
+        else:
+            l = self.layers.pop(ix)
+            self.layers.insert(ix + 1, l)
+
+    def remove_layer(self, ix):
+        if ix <0 or ix >= len(self.layers):
+            raise ValueError("Layer index out of bound")
+        else:
+            self.layers.pop(ix)
+
     def defineInputShape(self, x):
         self.inputShape = x.shape[1]
 
