@@ -6,6 +6,11 @@ import os
 from os import listdir
 from os.path import isfile, join
 
+global color
+color = {
+        "Dense": '#2196F3',
+        "Conv1D": '#4CAF50'}
+
 def switch_freeze(ix):
     global nnet
     strato = nnet.layers[ix]
@@ -15,9 +20,15 @@ def switch_freeze(ix):
         strato.unfreeze()
     update_net()
 
+def move_up(ix):
+    global nnet
+    nnet.move_up(ix)
+    update_net()
+
 def update_net():
     global master
     global layer_repr
+    global color
 
     for label in layer_repr:
         label.grid_forget()
@@ -26,9 +37,10 @@ def update_net():
 
     n_row = 2
     ix = 0
+
     for l in nnet.layers:
         frame = Frame(master,
-                bg = '#2196F3',
+                bg = color[l.layer_type],
                 padx = 32,
                 pady = 4)
         frame.grid(row = n_row, column= 2, columnspan = 3, pady = 2)
@@ -38,13 +50,15 @@ def update_net():
         label = Label(frame, text = l.layer_type,
                 bg = frame['bg'],
                 padx = 4,
+                width = 15,
                 font = "Arial 14")
         label.grid(row = n_row, column = 1)
 
         # label for layer shape
         shape_l = Label(frame, text = l.shape,
                 bg = frame['bg'],
-                padx = 8,
+                padx = 4,
+                width = 6,
                 font = "Arial 14")
         shape_l.grid(row = n_row, column = 2)
 
@@ -61,16 +75,31 @@ def update_net():
                 borderwidth = 0,
                 text = freeze_b_text,
                 font = "Arial 12",
-                command = lambda ix=ix: switch_freeze(ix),)
+                command = lambda ix=ix: switch_freeze(ix))
         freeze_b.grid(row = n_row, column = 3)
+
+        # button to move up
+        up_b = Button(frame,
+                text = "up",
+                command = lambda ix=ix: move_up(ix))
+        up_b.grid(row = n_row, column = 4)
+        if ix == 0:
+            up_b['state'] = DISABLED
 
         n_row += 1
         ix += 1
 
+"""
+function to add a layer to the network
+args:
+    layer_type (string):
+        "Dense"
+        "Conv1D"
+"""
 def add_layer(layer_type):
     global nnet
     nnet.add_layer(layer_type)
-
+    # update the view of the network with the new layer
     update_net()
 
 def update_list_models():
@@ -159,6 +188,7 @@ def create_window():
     # initialize empty list for layer repr
     layer_repr = []
 
+    # buttons to add layers
     addDense_b = Button(master,
             text = "Add Dense",
             width = 15,

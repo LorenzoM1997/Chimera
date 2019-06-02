@@ -48,6 +48,18 @@ class Chimera(object):
 
         self.layers.insert(ix, Strato(layer_type=layer_type))
 
+    """
+    move the layer one position up
+    args:
+        ix (int): the index of the layer we are moving up
+    """
+    def move_up(self, ix):
+        if ix <= 0 or ix >= len(self.layers):
+            raise ValueError("Layer index out of bound")
+        else:
+            l = self.layers.pop(ix)
+            self.layers.insert(ix - 1, l)
+
     def defineInputShape(self, x):
         self.inputShape = x.shape[1]
 
