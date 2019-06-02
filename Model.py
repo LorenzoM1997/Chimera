@@ -2,7 +2,7 @@ import tensorflow as tf
 import os
 import pickle
 
-from tensorflow.keras.layers import Conv2D, Dense, Flatten
+from tensorflow.keras.layers import Conv2D, Dense, Flatten, Reshape
 from tensorflow.keras import Model
 
 from Layers import Strato
@@ -25,9 +25,15 @@ class Chimera(object):
         inputs = tf.keras.Input(shape=(self.inputShape,))
 
         # define all other layers
-        x = self.layers[0].layer(inputs)
+        if self.layers[0].layer_type == 'Conv1D':
+            x = Reshape(target_shape = (1,self.inputShape))(inputs)
+            x = self.layers[0].layer(x)
+        else:
+            x = self.layers[0].layer(inputs)
 
         for i in range(1, len(self.layers)):
+            if self.layers[i].layer_type == "Dense" and self.layers[i-1].layer_type != "Dense":
+                x = Flatten()(x)
             x = self.layers[i].layer(x)
 
         # define output layer
