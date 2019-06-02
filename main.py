@@ -25,6 +25,10 @@ def move_up(ix):
     nnet.move_up(ix)
     update_net()
 
+def move_down(ix):
+    nnet.move_down(ix)
+    update_net()
+
 def update_net():
     global master
     global layer_repr
@@ -80,11 +84,21 @@ def update_net():
 
         # button to move up
         up_b = Button(frame,
+                image = upPhoto,
                 text = "up",
                 command = lambda ix=ix: move_up(ix))
         up_b.grid(row = n_row, column = 4)
         if ix == 0:
             up_b['state'] = DISABLED
+
+        # button to move down
+        down_b = Button(frame,
+                image = downPhoto,
+                text = "down",
+                command = lambda ix=ix: move_down(ix))
+        down_b.grid(row= n_row, column =5)
+        if ix == len(nnet.layers) -1:
+            down_b['state'] = DISABLED
 
         n_row += 1
         ix += 1
@@ -200,6 +214,10 @@ def create_window():
             command = lambda: add_layer("Conv1D"))
     addConv1D_b.grid(row = 3, column = 0)
 
+    global upPhoto, downPhoto, removePhoto
+    upPhoto = PhotoImage(file=os.path.join("img","arrow_up.png"))
+    downPhoto = PhotoImage(file=os.path.join("img","arrow_down.png"))
+    removePhoto = PhotoImage(file=os.path.join("img","delete.png"))
 
     update_net()
     mainloop()
