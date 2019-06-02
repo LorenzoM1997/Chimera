@@ -161,7 +161,7 @@ def create_window():
     modelname_e.grid(row = 0, column = 1, sticky = "W")
 
     # save button
-    savephoto = PhotoImage(file="save.png")
+    savephoto = PhotoImage(file=os.path.join("img","save.png"))
     save_b = Button(master,
             image = savephoto,
             text = "save",
