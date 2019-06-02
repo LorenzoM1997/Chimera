@@ -2,6 +2,7 @@ from Tkinter import *
 from Layers import Strato
 from Model import Chimera
 import numpy as np
+import os
 from os import listdir
 from os.path import isfile, join
 
@@ -88,27 +89,32 @@ def create_window():
     master.geometry("960x720")
     master['bg'] = '#fafafa'
 
-    train_button = Button(master,
-            text="Train network",
+    menubar = Menu(master)
+    importMenu = Menu(menubar, tearoff = 0)
+    importMenu.add_command(label = "Import Model")
+    importMenu.add_command(label = "Import Data")
+    menubar.add_cascade(label = "Import", menu = importMenu)
+    menubar.add_command(label = "Train",
             command = lambda: nnet.fit(x_train, y_train))
-    train_button.grid(row = 0, column = 0)
 
-    addDense_b = Button(master,
-            text = "Add Dense",
-            command = lambda: add_layer("Dense"))
-    addDense_b.grid (row = 1)
+    master.config(menu = menubar)
 
     global modelname_e
     modelname_e = Entry(master)
     modelname_e.grid(row = 0, column = 1)
 
+    savephoto = PhotoImage(file="save.png")
+
     save_b = Button(master,
-            text = "Save",
+            image = savephoto,
+            text = "save",
             command = save_and_update)
     save_b.grid(row = 0, column = 2)
 
     mypath = "models"
     models = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+    if models == []:
+        models.append("")
     global menu_models, model_choice
     model_choice = StringVar(master)
     model_choice.set(models[0])
@@ -123,6 +129,11 @@ def create_window():
     # initialize empty list for layer repr
     layer_repr = []
 
+    addDense_b = Button(master,
+            text = "Add Dense",
+            command = lambda: add_layer("Dense"))
+    addDense_b.grid (row = 1)
+
     update_net()
     mainloop()
 
@@ -135,8 +146,14 @@ def set_nnet():
     global nnet
     nnet = Chimera()
     nnet.add_layer("Dense")
-    nnet.add_layer("Dense")
 
+def checkdir():
+    if not os.path.isdir("models"):
+        os.mkdir("models")
+    if not os.path.isdir("layers"):
+        os.mkdir("layers")
+
+checkdir()
 set_data()
 set_nnet()
 create_window()
