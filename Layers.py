@@ -91,7 +91,6 @@ class Strato(object):
         self.frozen = info['frozen']
         if self.layer_type == "Dense":
             self.units = weights[0].shape[1]
-            print(self.units)
 
         self.assemble()
         self.layer.build(info['input_shape'])
