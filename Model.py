@@ -89,7 +89,7 @@ class Chimera(object):
             layerList = pickle.load(open( modelpath, "rb" ))
             self.layers = []
             for l in layerList:
-                s = Strato(l)
+                s = Strato(name = l)
                 self.layers.append(s)
 
     def save(self, name = ""):
