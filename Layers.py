@@ -5,7 +5,7 @@ import tensorflow as tf
 import numpy as np
 import pickle
 
-from tensorflow.keras.layers import Layer, Dense, Flatten, Conv2D
+from tensorflow.keras.layers import Layer, Dense, Flatten, Conv2D, Conv1D
 
 def check_dir():
     if not os.path.isdir("layers"):
@@ -15,6 +15,8 @@ class Strato(object):
     def __init__(self, name=None, layer_type="Dense"):
         self.layer_type = layer_type
 
+        self.units = 16 #default in case that name is not declared
+        self.filters = 16 #default in case that name is not declared
         self.assemble()
 
         self.frozen = False
@@ -37,9 +39,19 @@ class Strato(object):
     def assemble(self):
         if self.layer_type == "Dense":
             self.layer = Dense(
-                units=4,
+                units=self.units,
                 activation='relu')
-        self.shape = 4
+            self.shape = self.units
+        elif self.layer_type == "Conv1D":
+            self.layer = Conv1D(
+                    filters = self.filters,
+                    kernel_size = 5,
+                    strides = 2,
+                    padding = "same",
+                    activation = "relu")
+            self.shape = self.filters
+        else:
+            raise ValueError("Incorrect layer type")
 
     def freeze(self):
         self.layer.trainable = False
@@ -77,6 +89,9 @@ class Strato(object):
         info = pickle.load(open(iname, "rb"))
         self.layer_type = info['layer_type']
         self.frozen = info['frozen']
+        if self.layer_type == "Dense":
+            self.units = weights[0].shape[1]
+            print(self.units)
 
         self.assemble()
         self.layer.build(info['input_shape'])
