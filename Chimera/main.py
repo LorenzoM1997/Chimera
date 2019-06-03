@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from Tkinter import *
 from Layers import Strato
 from Model import Chimera
