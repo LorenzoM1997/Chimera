@@ -7,22 +7,24 @@ import pickle
 
 from tensorflow.keras.layers import Layer, Dense, Flatten, Conv2D, Conv1D
 
+
 def check_dir():
     if not os.path.isdir("layers"):
         os.mkdir("layers")
+
 
 class Strato(object):
     def __init__(self, name=None, layer_type="Dense"):
         self.layer_type = layer_type
 
-        self.units = 16 #default in case that name is not declared
-        self.filters = 16 #default in case that name is not declared
+        self.units = 16  # default in case that name is not declared
+        self.filters = 16  # default in case that name is not declared
         self.assemble()
 
         self.frozen = False
 
         check_dir()
-        
+
         if name == None:
             self.name = ''.join(random.choice(
                 string.ascii_lowercase + string.digits) for _ in range(16))
@@ -44,11 +46,11 @@ class Strato(object):
             self.shape = self.units
         elif self.layer_type == "Conv1D":
             self.layer = Conv1D(
-                    filters = self.filters,
-                    kernel_size = 5,
-                    strides = 2,
-                    padding = "same",
-                    activation = "relu")
+                filters=self.filters,
+                kernel_size=5,
+                strides=2,
+                padding="same",
+                activation="relu")
             self.shape = self.filters
         else:
             raise ValueError("Incorrect layer type")

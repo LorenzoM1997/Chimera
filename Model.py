@@ -26,7 +26,7 @@ class Chimera(object):
 
         # define all other layers
         if self.layers[0].layer_type == 'Conv1D':
-            x = Reshape(target_shape = (1,self.inputShape))(inputs)
+            x = Reshape(target_shape=(1, self.inputShape))(inputs)
             x = self.layers[0].layer(x)
         else:
             x = self.layers[0].layer(inputs)
@@ -59,6 +59,7 @@ class Chimera(object):
     args:
         ix (int): the index of the layer we are moving up
     """
+
     def move_up(self, ix):
         if ix <= 0 or ix >= len(self.layers):
             raise ValueError("Layer index out of bound")
@@ -67,14 +68,14 @@ class Chimera(object):
             self.layers.insert(ix - 1, l)
 
     def move_down(self, ix):
-        if ix < 0 or ix >= len(self.layers) -1:
+        if ix < 0 or ix >= len(self.layers) - 1:
             raise ValueError("Layer index out of bound")
         else:
             l = self.layers.pop(ix)
             self.layers.insert(ix + 1, l)
 
     def remove_layer(self, ix):
-        if ix <0 or ix >= len(self.layers):
+        if ix < 0 or ix >= len(self.layers):
             raise ValueError("Layer index out of bound")
         else:
             self.layers.pop(ix)
@@ -106,7 +107,7 @@ class Chimera(object):
             y=y,
             batch_size=batch_size,
             epochs=epochs,
-            verbose = verbose)
+            verbose=verbose)
 
     def predict(self, x):
         return self.model.predict(x)
@@ -114,20 +115,20 @@ class Chimera(object):
     def load(self, name):
         if not os.path.isdir("models"):
             os.mkdir("models")
-        
+
         modelpath = os.path.join("models", name)
         if os.path.exists(modelpath):
-            layerList = pickle.load(open( modelpath, "rb" ))
+            layerList = pickle.load(open(modelpath, "rb"))
             self.layers = []
             for l in layerList:
-                s = Strato(name = l)
+                s = Strato(name=l)
                 self.layers.append(s)
 
-    def save(self, name = ""):
+    def save(self, name=""):
 
         if name != "":
             self.filename = name
-        
+
         if self.filename == "":
             raise ValueError("Model name not defined")
 
@@ -142,4 +143,3 @@ class Chimera(object):
 
         modelpath = os.path.join("models", self.filename)
         pickle.dump(layerList, open(modelpath, "wb"))
-
