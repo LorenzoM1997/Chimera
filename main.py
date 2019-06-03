@@ -12,7 +12,6 @@ color = {
         "Conv1D": '#4CAF50'}
 
 def switch_freeze(ix):
-    global nnet
     strato = nnet.layers[ix]
     if strato.layer.trainable:
         strato.freeze()
@@ -21,12 +20,15 @@ def switch_freeze(ix):
     update_net()
 
 def move_up(ix):
-    global nnet
     nnet.move_up(ix)
     update_net()
 
 def move_down(ix):
     nnet.move_down(ix)
+    update_net()
+
+def remove(ix):
+    nnet.remove_layer(ix)
     update_net()
 
 def update_net():
@@ -99,6 +101,13 @@ def update_net():
         down_b.grid(row= n_row, column =5)
         if ix == len(nnet.layers) -1:
             down_b['state'] = DISABLED
+
+        # button to remove
+        remove_b = Button(frame,
+                image = removePhoto,
+                text = "delete",
+                command = lambda ix=ix: remove(ix))
+        remove_b.grid(row = n_row, column = 6)
 
         n_row += 1
         ix += 1
