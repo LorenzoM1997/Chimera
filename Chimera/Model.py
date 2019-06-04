@@ -35,12 +35,26 @@ class Chimera(object):
             if self.layers[i].layer_type == "Dense" and self.layers[i-1].layer_type != "Dense":
                 x = Flatten()(x)
             x = self.layers[i].layer(x)
-
+                    
         # define output layer
+        
         outputs = tf.keras.layers.Dense(
             self.outputShape, activation=tf.nn.softmax)(x)
 
         self.model = tf.keras.Model(inputs=inputs, outputs=outputs)
+
+        # extract default weights
+        self.weights = self.model.get_weights()
+
+        # if the weights can be loaded, load them
+        for i in range(len(self.layers)):
+            if self.layers[i].weights != None:
+                self.weights.append(self.layers[i].weights)
+            else:
+                print("weights not found")
+        
+        # set loaded weigts
+        self.model.set_weights(self.weights)
 
         self.model.compile(
             optimizer=self.optimizer,
@@ -86,7 +100,7 @@ class Chimera(object):
     def defineOutputShape(self, y):
         self.outputShape = y.shape[1]
 
-    def fit(self, x, y, batch_size=1, epochs=10, verbose=1):
+    def fit(self, x, y, batch_size=1, epochs=10, verbose=0):
 
         # make sure the number of samples is the same
         assert x.shape[0] == y.shape[0]
@@ -102,12 +116,14 @@ class Chimera(object):
         self.build()
 
         # fit to the data
-        self.model.fit(
+        history_obj = self.model.fit(
             x=x,
             y=y,
             batch_size=batch_size,
             epochs=epochs,
             verbose=verbose)
+
+        return history_obj
 
     def predict(self, x):
         return self.model.predict(x)

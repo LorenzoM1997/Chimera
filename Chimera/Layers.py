@@ -26,6 +26,7 @@ class Strato(object):
         check_dir()
 
         if name == None:
+            self.weights = None
             self.name = ''.join(random.choice(
                 string.ascii_lowercase + string.digits) for _ in range(16))
 
@@ -85,18 +86,16 @@ class Strato(object):
         check_dir()
         filename = os.path.join("layers", self.name)
         wname = filename + ".weights"
-        weights = pickle.load(open(wname, "rb"))
+        self.weights = pickle.load(open(wname, "rb"))
 
         iname = filename + ".info"
         info = pickle.load(open(iname, "rb"))
         self.layer_type = info['layer_type']
         self.frozen = info['frozen']
         if self.layer_type == "Dense":
-            self.units = weights[0].shape[1]
+            self.units = self.weights[0].shape[1]
 
         self.assemble()
-        self.layer.build(info['input_shape'])
-        self.layer.set_weights(weights)
-
+        
     def resetWeights(self):
         raise NotImplemented()

@@ -159,21 +159,28 @@ def load_and_update():
     update_net()
 
 
+def fit():
+    history_obj = nnet.fit(x_train, y_train)
+    accuracy = history_obj.history['accuracy'][-1]
+    loss = history_obj.history['loss'][-1]
+    accuracy_l['text'] = "Accuracy: " + str(accuracy)
+    loss_l['text'] = "Loss: " + str(loss)
+
 def create_window():
-    global x_train, y_train
     global master, layer_repr
     
     # main window setup
     master = Tk()
     master.title("Chimera")
-    master.minsize(960, 720)
-    master.geometry("960x720")
+    master.minsize(1020, 620)
+    master.geometry("1020x620")
     master['bg'] = '#fafafa'
     master.columnconfigure(0, weight=0)
     master.columnconfigure(1, weight=0)
     master.columnconfigure(2, weight=1)
-    master.columnconfigure(3, weight=1)
+    master.columnconfigure(3, weight=2)
     master.columnconfigure(4, weight=1)
+    master.columnconfigure(5, weight=2)
 
     # all images
     global upPhoto, downPhoto, removePhoto
@@ -188,7 +195,7 @@ def create_window():
     importMenu.add_command(label="Import Data")
     menubar.add_cascade(label="Import", menu=importMenu)
     menubar.add_command(label="Train",
-                        command=lambda: nnet.fit(x_train, y_train))
+                        command= fit)
 
     master.config(menu=menubar)
 
@@ -239,6 +246,20 @@ def create_window():
                          width=15,
                          command=lambda: add_layer("Conv1D"))
     addConv1D_b.grid(row=3, column=0)
+
+    global accuracy_l, loss_l
+    accuracy_l = Label(master,
+                       text = "No accuracy data ",
+                       font = "Arial 12",
+                       bg = master['bg'],
+                       padx = 16)
+    accuracy_l.grid(row = 1, column = 5, sticky = "E")
+    loss_l = Label(master,
+                   text = "No loss data",
+                   font = "Arial 12",
+                   bg = master['bg'],
+                   padx = 16)
+    loss_l.grid(row = 2, column = 5, sticky = "E")
 
     update_net()
     mainloop()
