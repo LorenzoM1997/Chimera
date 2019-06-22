@@ -2,3 +2,5 @@
 *.info
 *.swp
 *.pyc
+*.pyproj
+*.sln
