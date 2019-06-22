@@ -8,5 +8,5 @@ setup(
         author='Lorenzo Mambretti',
         author_email='lorenz.m97@gmail.com',
         packages=['Chimera'],
-        install_requires=['numpy'],
+        install_requires=['numpy','tensorflow'],
         )
