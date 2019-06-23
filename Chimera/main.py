@@ -104,12 +104,13 @@ def update_net():
             if ix == 0:
                 up_b['state'] = DISABLED
 
-            # button to move down
-            down_b = Button(frame,
-                            image=downPhoto,
-                            text="down",
-                            command=lambda ix=ix: move_down(ix))
-            down_b.grid(row=n_row, column=5)
+            if ix < len(nnet.layers) -2:
+                # button to move down
+                down_b = Button(frame,
+                                image=downPhoto,
+                                text="down",
+                                command=lambda ix=ix: move_down(ix))
+                down_b.grid(row=n_row, column=5)
 
             # button to remove
             remove_b = Button(frame,
