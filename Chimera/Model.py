@@ -29,31 +29,35 @@ class Chimera(object):
         # define input layer
         inputs = tf.keras.Input(shape=(self.inputShape,))
 
-        # define all other layers
-        if self.layers[0].config['layer_type'] == 'Conv1D':
-            x = Reshape(target_shape=(1, self.inputShape))(inputs)
-            x = self.layers[0].layer(x)
-        else:
-            x = self.layers[0].layer(inputs)
+        x = tf.identity(inputs)
 
-        for i in range(1, len(self.layers)):
-            if self.layers[i].config['layer_type'] == "Dense" and self.layers[i-1].config['layer_type'] != "Dense":
-                x = Flatten()(x)
+        # define all other layers
+        for i in range(len(self.layers)):
+
+            thisLayerType = self.layers[i].config['layer_type']
+
+            if i > 0:
+                lastLayer = self.layers[i - 1].config
+
+                if thisLayerType == "Dense" and lastLayer['layer_type'] != "Dense":
+                    x = Flatten()(x)
+                elif thisLayerType == "Conv1D" and lastLayer['layer_type'] == "Dense":
+                    x = Reshape(target_shape=(1, lastLayer['dense_units']))(x)
+            else:
+                # if it's the first layer and it's convolutional, reshape
+                if thisLayerType == "Conv1D":
+                    x = Reshape(target_shape=(1, self.inputShape))(x)
+
             x = self.layers[i].layer(x)
 
-        # define output layer
-
-        outputs = tf.keras.layers.Dense(
-            self.outputShape, activation=tf.nn.softmax)(x)
-
-        self.model = tf.keras.Model(inputs=inputs, outputs=outputs)
+        self.model = tf.keras.Model(inputs=inputs, outputs=x)
 
         # extract default weights
         self.weights = self.model.get_weights()
 
         # if the weights can be loaded, load them
         for i in range(len(self.layers)):
-            if self.layers[i].weights != None:
+            if self.layers[i].weights is not None:
                 self.weights.append(self.layers[i].weights)
             else:
                 print("weights not found")
@@ -68,11 +72,18 @@ class Chimera(object):
 
     def add_layer(self, layer_type, ix=None):
 
-        if ix == None:
-            ix = len(self.layers)
+        config = {'layer_type': layer_type}
 
+        if ix is None:
+            if len(self.layers) == 0:
+                ix = len(self.layers)
+                config['layer_type'] = 'Dense'
+                if self.outputShape is not None:
+                    config['dense_units'] = self.outputShape
+            else:
+                ix = len(self.layers) - 1
 
-        self.layers.insert(ix, Strato(layer_type=layer_type))
+        self.layers.insert(ix, Strato(config=config))
 
     """
     move the layer one position up
@@ -106,6 +117,12 @@ class Chimera(object):
     def defineOutputShape(self, y):
         self.outputShape = y.shape[1]
 
+        # enforce the last layer shape to match the output shape
+        lastLayer = self.layers[-1]
+        lastLayer.config['layer_type'] = "Dense"
+        lastLayer.config['dense_units'] = self.outputShape
+        lastLayer.assemble()
+
     def fit(self, x, y, batch_size=1, epochs=10):
         """
         function to train the model given the input and labels
@@ -120,10 +137,10 @@ class Chimera(object):
         assert x.shape[0] == y.shape[0]
 
         # automatically detect input shape
-        if self.inputShape == None:
+        if self.inputShape is None or self.inputShape != x.shape[1]:
             self.defineInputShape(x)
 
-        if self.outputShape == None:
+        if self.outputShape is None or self.outputShape != y.shape[1]:
             self.defineOutputShape(y)
 
         # build the model
