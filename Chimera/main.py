@@ -14,7 +14,9 @@ globalPath = join(os.getcwd(), "Chimera")
 global color
 color = {
     "Dense": '#2196F3',
-    "Conv1D": '#4CAF50'}
+    "Conv1D": '#4CAF50',
+    "Conv2D": '#009688',
+    "Dropout": '#F44336'}
 
 
 def switch_freeze(ix):
@@ -71,7 +73,7 @@ def update_net():
         label.grid(row=n_row, column=1)
 
         # label for layer shape
-        shape_l = Label(frame, text=l.shape,
+        shape_l = Label(frame, text=l.label,
                         bg=frame['bg'],
                         padx=4,
                         width=6,
@@ -250,6 +252,16 @@ def create_window():
                          width=15,
                          command=lambda: add_layer("Conv1D"))
     addConv1D_b.grid(row=3, column=0)
+    addConv2D_b = Button(master,
+                         text = "Add Conv2D",
+                         width=15,
+                         command=lambda: add_layer("Conv2D"))
+    addConv2D_b.grid(row = 4, column = 0)
+    addDropout_b =Button(master,
+                         text = "Add Dropout",
+                         width=15,
+                         command=lambda: add_layer("Dropout"))
+    addDropout_b.grid(row = 5, column = 0)
 
     global accuracy_l, loss_l
     accuracy_l = Label(master,

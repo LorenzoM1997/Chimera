@@ -6,7 +6,7 @@ import tensorflow as tf
 import numpy as np
 import pickle
 
-from tensorflow.keras.layers import Layer, Dense, Flatten, Conv2D, Conv1D
+from tensorflow.keras.layers import Layer, Dense, Flatten, Conv2D, Conv1D, Dropout
 
 
 def check_dir():
@@ -26,10 +26,11 @@ class Strato(object):
             'frozen': False,
             'activation': "relu",
             'dense_units': 16,
-            'Conv1D_filters': 8,
-            'Conv1D_kernel_size':5,
-            'Conv1D_strides':2,
-            'Conv1D_padding': "same"}
+            'filters': 8,
+            'kernel_size':5,
+            'strides':2,
+            'padding': "same",
+            'Dropout_rate': 0.2}
 
         # if there are configurations, use them to overwrite the default settings
         if config != None:
@@ -62,18 +63,36 @@ class Strato(object):
                 activation=self.config['activation'])
 
             # what is visualized
-            self.shape = self.config['dense_units']
+            self.label = self.config['dense_units']
 
         elif self.config['layer_type'] == "Conv1D":
             self.layer = Conv1D(
-                filters=self.config['Conv1D_filters'],
-                kernel_size=self.config['Conv1D_kernel_size'],
-                strides=self.config['Conv1D_strides'],
-                padding=self.config['Conv1D_padding'],
+                filters=self.config['filters'],
+                kernel_size=self.config['kernel_size'],
+                strides=self.config['strides'],
+                padding=self.config['padding'],
                 activation=self.config['activation'])
 
             # what is visualized
-            self.shape = self.config['Conv1D_filters']
+            self.label = self.config['filters']
+
+        elif self.config['layer_type'] == "Conv2D":
+            self.layer = Conv2D(
+                filters = self.config['filters'],
+                kernel_size = self.config['kernel_size'],
+                strides = self.config['strides'],
+                padding = self.config['padding'],
+                activation = self.config['activation'])
+
+            # what is visualized
+            self.label = self.config['filters']
+
+        elif self.config['layer_type'] == "Dropout":
+            self.layer = Dropout(
+                rate = self.config['Dropout_rate'])
+
+            # what is visualized
+            self.label = self.config['Dropout_rate']
         else:
             raise ValueError("Incorrect layer type")
 

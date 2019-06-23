@@ -98,7 +98,11 @@ class Chimera(object):
                 ix = len(self.layers) - 1
 
         self.layers.insert(ix, Strato(config=config))
+
+        # update the list of changes
         self.changeList.insert(ix, False)
+        if ix + 1 < len(self.changeList):
+            self.changeList[ix + 1] = True
 
     """
     move the layer one position up
@@ -116,6 +120,8 @@ class Chimera(object):
             # mark the two layers as changed
             self.changeList[ix] = True
             self.changeList[ix - 1] = True
+            if ix + 1 < len(self.changeList):
+                self.changeList[ix + 1] = True
 
     def move_down(self, ix):
         if ix < 0 or ix >= len(self.layers) - 1:
@@ -127,6 +133,8 @@ class Chimera(object):
             # mark the two layers as changed
             self.changeList[ix + 1] = True
             self.changeList[ix] = True
+            if ix + 2 < len(self.changeList):
+                self.changeList[ix + 2] = True
 
     def remove_layer(self, ix):
         if ix < 0 or ix >= len(self.layers):
