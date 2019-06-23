@@ -15,14 +15,14 @@ def check_dir():
 
 
 class Strato(object):
-    def __init__(self, name=None, layer_type="Dense", config = None):
+    def __init__(self, name=None, config = None):
 
         # create directory if not existent
         check_dir()
 
         # default settings
         self.config = {
-            'layer_type': layer_type,
+            'layer_type': 'Dense',
             'frozen': False,
             'activation': "relu",
             'dense_units': 16,
@@ -30,6 +30,11 @@ class Strato(object):
             'Conv1D_kernel_size':5,
             'Conv1D_strides':2,
             'Conv1D_padding': "same"}
+
+        # if there are configurations, use them to overwrite the default settings
+        if config != None:
+            for k in config.keys():
+                self.config[k] = config[k]
 
         # assemble the layer
         self.assemble()       
