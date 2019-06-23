@@ -9,6 +9,7 @@ from Layers import Strato
 
 
 class Chimera(object):
+
     def __init__(self):
 
         self.loss = tf.keras.losses.CategoricalCrossentropy()
@@ -19,6 +20,10 @@ class Chimera(object):
 
         self.layers = []
         self.filename = ""
+
+        # create the directories if they are missing
+        if not os.path.isdir("models"):
+            os.mkdir("models")
 
     def build(self):
         # define input layer
@@ -35,9 +40,9 @@ class Chimera(object):
             if self.layers[i].layer_type == "Dense" and self.layers[i-1].layer_type != "Dense":
                 x = Flatten()(x)
             x = self.layers[i].layer(x)
-                    
+
         # define output layer
-        
+
         outputs = tf.keras.layers.Dense(
             self.outputShape, activation=tf.nn.softmax)(x)
 
@@ -52,7 +57,7 @@ class Chimera(object):
                 self.weights.append(self.layers[i].weights)
             else:
                 print("weights not found")
-        
+
         # set loaded weigts
         self.model.set_weights(self.weights)
 
@@ -100,7 +105,15 @@ class Chimera(object):
     def defineOutputShape(self, y):
         self.outputShape = y.shape[1]
 
-    def fit(self, x, y, batch_size=1, epochs=10, verbose=0):
+    def fit(self, x, y, batch_size=1, epochs=10):
+        """
+        function to train the model given the input and labels
+        Args:
+            x : the input
+            y : the labels
+            batch_size (int)
+            epochs (int) : the number of times we iterate through the entire data set
+        """
 
         # make sure the number of samples is the same
         assert x.shape[0] == y.shape[0]
@@ -121,16 +134,30 @@ class Chimera(object):
             y=y,
             batch_size=batch_size,
             epochs=epochs,
-            verbose=verbose)
+            verbose=0   # we don't want any output to screen
+        )
 
         return history_obj
 
     def predict(self, x):
+        """
+        predicts the output using the current model
+        Args:
+            x: the input
+        """
+        self.build()
+
         return self.model.predict(x)
 
     def load(self, name):
-        if not os.path.isdir("models"):
-            os.mkdir("models")
+        """
+        load the model if it exists
+        Args:
+            name (str): the name of the model
+        """
+
+        if name == "":
+            return
 
         modelpath = os.path.join("models", name)
         if os.path.exists(modelpath):
@@ -141,6 +168,11 @@ class Chimera(object):
                 self.layers.append(s)
 
     def save(self, name=""):
+        """
+        save the model
+        Args:
+            name (str) the name to use for the model
+        """
 
         if name != "":
             self.filename = name
@@ -148,11 +180,8 @@ class Chimera(object):
         if self.filename == "":
             raise ValueError("Model name not defined")
 
-        if not os.path.isdir("models"):
-            os.mkdir("models")
-
+        # the names of the layers are appended to a list
         layerList = []
-
         for l in self.layers:
             l.save()
             layerList.append(l.name)
