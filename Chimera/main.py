@@ -7,6 +7,7 @@ import numpy as np
 import os
 from os import listdir
 from os.path import isfile, join
+from dataManager import load_inputs, load_labels, prepare_data
 
 global globalPath
 globalPath = join(os.getcwd(), "Chimera")
@@ -165,11 +166,13 @@ def load_and_update():
 
 
 def fit():
-    history_obj = nnet.fit(x_train, y_train)
+    train_dataset, inputShape, outputShape = prepare_data()
+    history_obj = nnet.fit(train_dataset, inputShape, outputShape)
     accuracy = history_obj.history['accuracy'][-1]
     loss = history_obj.history['loss'][-1]
     accuracy_l['text'] = "Accuracy: " + str(accuracy)
     loss_l['text'] = "Loss: " + str(loss)
+    update_net()
 
 def create_window():
     global master, layer_repr
@@ -198,11 +201,13 @@ def create_window():
     menubar = Menu(master)
     importMenu = Menu(menubar, tearoff=0)
     importMenu.add_command(label="Import Model")
-    importMenu.add_command(label="Import Data")
+    importMenu.add_command(label="Import Input",
+                           command = load_inputs)
+    importMenu.add_command(label="Import Labels",
+                           command = load_labels)
     menubar.add_cascade(label="Import", menu=importMenu)
     menubar.add_command(label="Train",
                         command= fit)
-
     master.config(menu=menubar)
 
     model_l = Label(master, text="Model name:",
@@ -281,12 +286,6 @@ def create_window():
     mainloop()
 
 
-def set_data():
-    global x_train, y_train
-    x_train = np.random.rand(32, 5)
-    y_train = np.random.rand(32, 2)
-
-
 def set_nnet():
     global nnet
     nnet = Chimera()
@@ -301,6 +300,5 @@ def checkdir():
 
 
 checkdir()
-set_data()
 set_nnet()
 create_window()

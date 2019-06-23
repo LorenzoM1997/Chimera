@@ -147,11 +147,8 @@ class Chimera(object):
             self.changeList.pop(ix)
             self.changeList[ix] = True
 
-    def defineInputShape(self, x):
-        self.inputShape = x.shape[1]
-
-    def defineOutputShape(self, y):
-        self.outputShape = y.shape[1]
+    def defineOutputShape(self, outputShape):
+        self.outputShape = outputShape
 
         # enforce the last layer shape to match the output shape
         lastLayer = self.layers[-1]
@@ -159,7 +156,7 @@ class Chimera(object):
         lastLayer.config['dense_units'] = self.outputShape
         lastLayer.assemble()
 
-    def fit(self, x, y, batch_size=1, epochs=10):
+    def fit(self, train_dataset, inputShape, outputShape, batch_size=1, epochs=10):
         """
         function to train the model given the input and labels
         Args:
@@ -169,23 +166,19 @@ class Chimera(object):
             epochs (int) : the number of times we iterate through the entire data set
         """
 
-        # make sure the number of samples is the same
-        assert x.shape[0] == y.shape[0]
-
         # automatically detect input shape
-        if self.inputShape is None or self.inputShape != x.shape[1]:
-            self.defineInputShape(x)
+        if self.inputShape is None or self.inputShape != inputShape:
+            self.inputShape = inputShape
 
-        if self.outputShape is None or self.outputShape != y.shape[1]:
-            self.defineOutputShape(y)
+        if self.outputShape is None or self.outputShape != outputShape:
+            self.defineOutputShape(outputShape)
 
         # build the model
         self.build()
 
         # fit to the data
         history_obj = self.model.fit(
-            x=x,
-            y=y,
+            train_dataset,
             batch_size=batch_size,
             epochs=epochs,
             verbose=0   # we don't want any output to screen
