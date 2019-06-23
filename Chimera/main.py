@@ -94,30 +94,29 @@ def update_net():
                           command=lambda ix=ix: switch_freeze(ix))
         freeze_b.grid(row=n_row, column=3)
 
-        # button to move up
-        up_b = Button(frame,
-                      image=upPhoto,
-                      text="up",
-                      command=lambda ix=ix: move_up(ix))
-        up_b.grid(row=n_row, column=4)
-        if ix == 0:
-            up_b['state'] = DISABLED
+        if ix < len(nnet.layers) - 1:
+            # button to move up
+            up_b = Button(frame,
+                          image=upPhoto,
+                          text="up",
+                          command=lambda ix=ix: move_up(ix))
+            up_b.grid(row=n_row, column=4)
+            if ix == 0:
+                up_b['state'] = DISABLED
 
-        # button to move down
-        down_b = Button(frame,
-                        image=downPhoto,
-                        text="down",
-                        command=lambda ix=ix: move_down(ix))
-        down_b.grid(row=n_row, column=5)
-        if ix == len(nnet.layers) - 1:
-            down_b['state'] = DISABLED
+            # button to move down
+            down_b = Button(frame,
+                            image=downPhoto,
+                            text="down",
+                            command=lambda ix=ix: move_down(ix))
+            down_b.grid(row=n_row, column=5)
 
-        # button to remove
-        remove_b = Button(frame,
-                          image=removePhoto,
-                          text="delete",
-                          command=lambda ix=ix: remove(ix))
-        remove_b.grid(row=n_row, column=6)
+            # button to remove
+            remove_b = Button(frame,
+                              image=removePhoto,
+                              text="delete",
+                              command=lambda ix=ix: remove(ix))
+            remove_b.grid(row=n_row, column=6)
 
         n_row += 1
         ix += 1
