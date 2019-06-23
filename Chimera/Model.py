@@ -19,6 +19,7 @@ class Chimera(object):
         self.outputShape = None
 
         self.layers = []
+        self.changeList = []
         self.filename = ""
 
         # create the directories if they are missing
@@ -26,6 +27,10 @@ class Chimera(object):
             os.mkdir("models")
 
     def build(self):
+
+        # check that all layers have correct shape
+        self.checkLayerShape()
+
         # define input layer
         inputs = tf.keras.Input(shape=(self.inputShape,))
 
@@ -70,6 +75,15 @@ class Chimera(object):
             loss=self.loss,
             metrics=['accuracy'])
 
+    def checkLayerShape(self):
+
+        for i in range(len(self.changeList)):
+            if self.changeList[i] == True:
+
+                # if there is a change, reassemble the layer
+                self.layers[i].assemble()
+                self.changeList[i] = False
+            
     def add_layer(self, layer_type, ix=None):
 
         config = {'layer_type': layer_type}
@@ -84,6 +98,7 @@ class Chimera(object):
                 ix = len(self.layers) - 1
 
         self.layers.insert(ix, Strato(config=config))
+        self.changeList.insert(ix, False)
 
     """
     move the layer one position up
@@ -98,6 +113,10 @@ class Chimera(object):
             l = self.layers.pop(ix)
             self.layers.insert(ix - 1, l)
 
+            # mark the two layers as changed
+            self.changeList[ix] = True
+            self.changeList[ix - 1] = True
+
     def move_down(self, ix):
         if ix < 0 or ix >= len(self.layers) - 1:
             raise ValueError("Layer index out of bound")
@@ -105,11 +124,20 @@ class Chimera(object):
             l = self.layers.pop(ix)
             self.layers.insert(ix + 1, l)
 
+            # mark the two layers as changed
+            self.changeList[ix + 1] = True
+            self.changeList[ix] = True
+
     def remove_layer(self, ix):
         if ix < 0 or ix >= len(self.layers):
             raise ValueError("Layer index out of bound")
         else:
+            # pop the layer out
             self.layers.pop(ix)
+
+            # mark the following layer as changed
+            self.changeList.pop(ix)
+            self.changeList[ix] = True
 
     def defineInputShape(self, x):
         self.inputShape = x.shape[1]
