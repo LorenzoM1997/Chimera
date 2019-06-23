@@ -30,14 +30,14 @@ class Chimera(object):
         inputs = tf.keras.Input(shape=(self.inputShape,))
 
         # define all other layers
-        if self.layers[0].layer_type == 'Conv1D':
+        if self.layers[0].config['layer_type'] == 'Conv1D':
             x = Reshape(target_shape=(1, self.inputShape))(inputs)
             x = self.layers[0].layer(x)
         else:
             x = self.layers[0].layer(inputs)
 
         for i in range(1, len(self.layers)):
-            if self.layers[i].layer_type == "Dense" and self.layers[i-1].layer_type != "Dense":
+            if self.layers[i].config['layer_type'] == "Dense" and self.layers[i-1].config['layer_type'] != "Dense":
                 x = Flatten()(x)
             x = self.layers[i].layer(x)
 
@@ -70,6 +70,7 @@ class Chimera(object):
 
         if ix == None:
             ix = len(self.layers)
+
 
         self.layers.insert(ix, Strato(layer_type=layer_type))
 

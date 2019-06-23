@@ -1,12 +1,15 @@
 #!/usr/bin/python
 
-from Tkinter import *
+from tkinter import *
 from Layers import Strato
 from Model import Chimera
 import numpy as np
 import os
 from os import listdir
 from os.path import isfile, join
+
+global globalPath
+globalPath = join(os.getcwd(), "Chimera")
 
 global color
 color = {
@@ -53,14 +56,14 @@ def update_net():
 
     for l in nnet.layers:
         frame = Frame(master,
-                      bg=color[l.layer_type],
+                      bg=color[l.config['layer_type']],
                       padx=32,
                       pady=4)
         frame.grid(row=n_row, column=2, columnspan=3, pady=2)
         layer_repr.append(frame)
 
         # label for layer type
-        label = Label(frame, text=l.layer_type,
+        label = Label(frame, text=l.config['layer_type'],
                       bg=frame['bg'],
                       padx=4,
                       width=15,
@@ -184,10 +187,11 @@ def create_window():
 
     # all images
     global upPhoto, downPhoto, removePhoto
-    upPhoto = PhotoImage(file=os.path.join("img", "arrow_up.png"))
-    downPhoto = PhotoImage(file=os.path.join("img", "arrow_down.png"))
-    removePhoto = PhotoImage(file=os.path.join("img", "delete.png"))
-    savephoto = PhotoImage(file=os.path.join("img", "save.png"))
+    imgDir = join(globalPath, "img")
+    upPhoto = PhotoImage(file=join(imgDir, "arrow_up.png"))
+    downPhoto = PhotoImage(file=join(imgDir, "arrow_down.png"))
+    removePhoto = PhotoImage(file=join(imgDir, "delete.png"))
+    savephoto = PhotoImage(file=join(imgDir, "save.png"))
 
     menubar = Menu(master)
     importMenu = Menu(menubar, tearoff=0)
