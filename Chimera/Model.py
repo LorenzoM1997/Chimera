@@ -7,12 +7,25 @@ from tensorflow.keras import Model
 
 from Layers import Strato
 
+global losses
+losses = {
+    'BinaryCrossentropy': tf.keras.losses.BinaryCrossentropy(),
+    'CategoricalCrossentropy': tf.keras.losses.CategoricalCrossentropy(),
+    'CategoricalHinge': tf.keras.losses.CategoricalHinge(),
+    'CosineSimilarity': tf.keras.losses.CosineSimilarity(),
+    'Hinge': tf.keras.losses.Hinge(),
+    'Huber': tf.keras.losses.Huber(),
+    'KLDivergence': tf.keras.losses.KLDivergence(),
+    'MeanAbsoluteError': tf.keras.losses.MeanAbsoluteError(),
+    'MeanSquaredError': tf.keras.losses.MeanSquaredError(),
+    'SparseCategoricalCrossentropy': tf.keras.losses.SparseCategoricalCrossentropy(),
+    }
 
 class Chimera(object):
 
     def __init__(self):
 
-        self.loss = tf.keras.losses.CategoricalCrossentropy()
+        self.loss = losses['CategoricalCrossentropy']
         self.optimizer = tf.keras.optimizers.Adam()
 
         self.inputShape = None
@@ -167,18 +180,19 @@ class Chimera(object):
         """
 
         # automatically detect input shape
-        if self.inputShape is None or self.inputShape != inputShape:
-            self.inputShape = x.shape[0]
+        if self.inputShape is None or self.inputShape != x.shape[1]:
+            self.inputShape = x.shape[1]
 
-        if self.outputShape is None or self.outputShape != outputShape:
-            self.defineOutputShape(y.shape[0])
+        if self.outputShape is None or self.outputShape != y.shape[1]:
+            self.defineOutputShape(y.shape[1])
 
         # build the model
         self.build()
 
         # fit to the data
         history_obj = self.model.fit(
-            train_dataset,
+            x=x,
+            y=y,
             batch_size=batch_size,
             epochs=epochs,
             verbose=0   # we don't want any output to screen
@@ -241,6 +255,10 @@ class Chimera(object):
 
         modelpath = os.path.join("models", self.filename)
         pickle.dump(layerList, open(modelpath, "wb"))
+
+
+    def set_loss(self, loss_name):
+        self.loss = losses[loss_name]
 
     def export(self, filepath):
 

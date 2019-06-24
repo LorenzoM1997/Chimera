@@ -3,12 +3,13 @@
 from tkinter import *
 from tkinter.messagebox import showerror
 from Layers import Strato
+import Model
 from Model import Chimera
 import numpy as np
 import os
 from os import listdir
 from os.path import isfile, join
-from dataManager import load_inputs, load_labels, prepare_data
+from DataManager import load_inputs, load_labels, prepare_data
 from ModelManager import load_model, select_export_filepath
 
 global globalPath
@@ -139,6 +140,7 @@ def export():
     except RuntimeError:
         showerror("Error", "Could not build model.")
 
+
 def add_layer(layer_type):
     """
     function to add a layer to the network
@@ -252,6 +254,14 @@ def create_window():
                     text="load",
                     command=load_and_update)
     load_b.grid(row=1, column=2, sticky="W", padx=4)
+
+    # losses menu
+    global loss_choice
+    losses = [i for i in Model.losses.keys()]
+    loss_choice = StringVar(master)
+    loss_choice.set(losses[0])
+    menu_losses = OptionMenu(master, loss_choice, *losses, command=lambda loss_name = loss_choice.get(): nnet.set_loss(loss_name))
+    menu_losses.grid(row=2, column=1, sticky="W")
 
     # initialize empty list for layer repr
     layer_repr = []

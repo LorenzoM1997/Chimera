@@ -22,6 +22,12 @@ def load_labels():
         global y
         y = np.load(fname)
 
+        # if the array is one-dimensional, then reshape it to two-dimensional
+        try:
+            shape = y.shape[1]
+        except IndexError:
+            y = np.reshape(y, (-1,1))
+
 
 def prepare_data():
     if 'x' in globals() and 'y' in globals():
