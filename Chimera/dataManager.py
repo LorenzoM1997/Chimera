@@ -33,15 +33,12 @@ def prepare_data():
 
         # split the dataset into training and testing
         train = int(num_items * 0.7)
-        train_examples, train_labels = x[:train], y[:train]
-        test_examples, test_labels = x[train:], y[:train]
+        train_examples = x[:train]
+        train_labels = y[:train]
+        test_examples = x[train:]
+        test_labels = y[train:]
 
-        # convert the tensors into Datasets
-        global train_dataset, test_dataset
-        train_dataset = tf.data.Dataset.from_tensor_slices((train_examples, train_labels))
-        test_dataset = tf.data.Dataset.from_tensor_slices((test_examples, test_labels))
-
-        return train_dataset, inputShape, outputShape
+        return train_examples, train_labels, test_examples, test_labels
     else:
-        showerror("Error", "You haven't selected data to train the model")
-        raise ValueError("data not selected")
+        showerror("Error", "You haven't selected data to train the model.\nMake sure you select the data by using Import > Import inputs and Import > Import labels")
+        raise RuntimeError("data not selected")
