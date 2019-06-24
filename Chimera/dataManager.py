@@ -4,10 +4,12 @@ from tkinter.messagebox import showerror
 import numpy as np
 import tensorflow as tf
 
+
 def load_file():
     fname = askopenfilename(filetypes=(("Numpy files", "*.npy"),
                                        ("All files", "*.*")))
     return fname
+
 
 def load_inputs():
     fname = load_file()
@@ -26,7 +28,7 @@ def load_labels():
         try:
             shape = y.shape[1]
         except IndexError:
-            y = np.reshape(y, (-1,1))
+            y = np.reshape(y, (-1, 1))
 
 
 def prepare_data():

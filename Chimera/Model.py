@@ -19,7 +19,7 @@ losses = {
     'MeanAbsoluteError': tf.keras.losses.MeanAbsoluteError(),
     'MeanSquaredError': tf.keras.losses.MeanSquaredError(),
     'SparseCategoricalCrossentropy': tf.keras.losses.SparseCategoricalCrossentropy(),
-    }
+}
 
 global optimizers
 optimizers = {
@@ -29,6 +29,7 @@ optimizers = {
     'Adamax': tf.keras.optimizers.Adamax,
     'RMSprop': tf.keras.optimizers.RMSprop,
     'SGD': tf.keras.optimizers.SGD}
+
 
 class Chimera(object):
 
@@ -105,7 +106,7 @@ class Chimera(object):
                 # if there is a change, reassemble the layer
                 self.layers[i].assemble()
                 self.changeList[i] = False
-            
+
     def add_layer(self, layer_type, ix=None):
 
         config = {'layer_type': layer_type}
@@ -275,7 +276,6 @@ class Chimera(object):
         modelpath = os.path.join("models", self.filename)
         pickle.dump(config, open(modelpath, "wb"))
 
-
     def set_loss(self, loss_name):
         self.loss_name = loss_name
 
@@ -296,5 +296,5 @@ class Chimera(object):
             filepath,
             overwrite=True,
             include_optimizer=True,
-            save_format = "h5"
+            save_format="h5"
         )

@@ -6,14 +6,13 @@ from Layers import Strato
 import Model
 from Model import Chimera
 import numpy as np
-import os
-from os import listdir
-from os.path import isfile, join
+from os import listdir, getcwd, mkdir
+from os.path import isfile, join, isdir
 from DataManager import load_inputs, load_labels, prepare_data
 from ModelManager import load_model, select_export_filepath
 
 global globalPath
-globalPath = join(os.getcwd(), "Chimera")
+globalPath = join(getcwd(), "Chimera")
 
 global color
 color = {
@@ -108,7 +107,7 @@ def update_net():
                               command=lambda ix=ix: move_up(ix))
                 up_b.grid(row=n_row, column=4)
 
-            if ix < len(nnet.layers) -2:
+            if ix < len(nnet.layers) - 2:
                 # button to move down
                 down_b = Button(frame,
                                 image=downPhoto,
@@ -133,6 +132,7 @@ def update_net():
 
 def import_model():
     raise NotImplementedError()
+
 
 def export():
     filepath = select_export_filepath()
@@ -188,9 +188,10 @@ def fit():
     loss_l['text'] = "Loss: " + str(loss)
     update_net()
 
+
 def create_window():
     global master, layer_repr
-    
+
     # main window setup
     master = Tk()
     master.title("Chimera")
@@ -214,10 +215,9 @@ def create_window():
 
     menubar = Menu(master)
     importMenu = Menu(menubar, tearoff=0)
-    importMenu.add_command(label="Import Model", command = import_model)
-    importMenu.add_command(label="Import Input", command = load_inputs)
-    importMenu.add_command(label="Import Labels", command = load_labels)
-
+    importMenu.add_command(label="Import Model", command=import_model)
+    importMenu.add_command(label="Import Input", command=load_inputs)
+    importMenu.add_command(label="Import Labels", command=load_labels)
 
     menubar.add_cascade(label="Import", menu=importMenu)
     menubar.add_command(label="Export", command=export)
@@ -248,11 +248,12 @@ def create_window():
     global menu_models
     model_choice = StringVar(master)
     model_choice.set(models[0])
-    menu_models = OptionMenu(master, model_choice, *models, command = lambda model_name = model_choice.get(): load_and_update(model_name))
+    menu_models = OptionMenu(master, model_choice, *models,
+                             command=lambda model_name=model_choice.get(): load_and_update(model_name))
     menu_models.grid(row=1, column=2, sticky="ew")
 
     # losses menu
-    losses_l = Label(master, text="Losses:", bg = master['bg'])
+    losses_l = Label(master, text="Losses:", bg=master['bg'])
     losses_l.grid(row=2, column=1, sticky="E")
 
     global loss_choice
@@ -260,11 +261,11 @@ def create_window():
     loss_choice = StringVar(master)
     loss_choice.set('CategoricalCrossentropy')
     menu_losses = OptionMenu(master, loss_choice, *losses,
-                             command=lambda loss_name = loss_choice.get(): nnet.set_loss(loss_name))
+                             command=lambda loss_name=loss_choice.get(): nnet.set_loss(loss_name))
     menu_losses.grid(row=2, column=2, sticky="ew")
 
     # optimizers menu
-    opt_l = Label(master, text="Optimizers:", bg = master['bg'])
+    opt_l = Label(master, text="Optimizers:", bg=master['bg'])
     opt_l.grid(row=3, column=1, sticky="E")
 
     global opt_choice
@@ -272,8 +273,8 @@ def create_window():
     opt_choice = StringVar(master)
     opt_choice.set('Adam')
     menu_opt = OptionMenu(master, opt_choice, *optimizers,
-                          command=lambda opt_name = opt_choice.get(): nnet.set_optimizer(opt_name))
-    menu_opt.grid(row = 3, column=2, sticky="ew")
+                          command=lambda opt_name=opt_choice.get(): nnet.set_optimizer(opt_name))
+    menu_opt.grid(row=3, column=2, sticky="ew")
 
     # initialize empty list for layer repr
     layer_repr = []
@@ -290,29 +291,29 @@ def create_window():
                          command=lambda: add_layer("Conv1D"))
     addConv1D_b.grid(row=1, column=0)
     addConv2D_b = Button(master,
-                         text = "Add Conv2D",
+                         text="Add Conv2D",
                          width=15,
                          command=lambda: add_layer("Conv2D"))
-    addConv2D_b.grid(row=2, column = 0)
-    addDropout_b =Button(master,
-                         text = "Add Dropout",
-                         width=15,
-                         command=lambda: add_layer("Dropout"))
-    addDropout_b.grid(row=3, column = 0)
+    addConv2D_b.grid(row=2, column=0)
+    addDropout_b = Button(master,
+                          text="Add Dropout",
+                          width=15,
+                          command=lambda: add_layer("Dropout"))
+    addDropout_b.grid(row=3, column=0)
 
     global accuracy_l, loss_l
     accuracy_l = Label(master,
-                       text = "No accuracy data ",
-                       font = "Arial 11",
-                       bg = master['bg'],
-                       padx = 16)
-    accuracy_l.grid(row = 1, column = 5, sticky = "E")
+                       text="No accuracy data ",
+                       font="Arial 11",
+                       bg=master['bg'],
+                       padx=16)
+    accuracy_l.grid(row=1, column=5, sticky="E")
     loss_l = Label(master,
-                   text = "No loss data",
-                   font = "Arial 11",
-                   bg = master['bg'],
-                   padx = 16)
-    loss_l.grid(row = 2, column = 5, sticky = "E")
+                   text="No loss data",
+                   font="Arial 11",
+                   bg=master['bg'],
+                   padx=16)
+    loss_l.grid(row=2, column=5, sticky="E")
 
     update_net()
     mainloop()
@@ -325,10 +326,10 @@ def set_nnet():
 
 
 def checkdir():
-    if not os.path.isdir("models"):
-        os.mkdir("models")
-    if not os.path.isdir("layers"):
-        os.mkdir("layers")
+    if not isdir("models"):
+        mkdir("models")
+    if not isdir("layers"):
+        mkdir("layers")
 
 
 checkdir()

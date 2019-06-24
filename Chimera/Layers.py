@@ -15,7 +15,7 @@ def check_dir():
 
 
 class Strato(object):
-    def __init__(self, name=None, config = None):
+    def __init__(self, name=None, config=None):
 
         # create directory if not existent
         check_dir()
@@ -27,8 +27,8 @@ class Strato(object):
             'activation': "relu",
             'dense_units': 16,
             'filters': 8,
-            'kernel_size':5,
-            'strides':2,
+            'kernel_size': 5,
+            'strides': 2,
             'padding': "same",
             'Dropout_rate': 0.2}
 
@@ -38,7 +38,7 @@ class Strato(object):
                 self.config[k] = config[k]
 
         # assemble the layer
-        self.assemble()       
+        self.assemble()
 
         if name == None:
             self.weights = None
@@ -78,18 +78,18 @@ class Strato(object):
 
         elif self.config['layer_type'] == "Conv2D":
             self.layer = Conv2D(
-                filters = self.config['filters'],
-                kernel_size = self.config['kernel_size'],
-                strides = self.config['strides'],
-                padding = self.config['padding'],
-                activation = self.config['activation'])
+                filters=self.config['filters'],
+                kernel_size=self.config['kernel_size'],
+                strides=self.config['strides'],
+                padding=self.config['padding'],
+                activation=self.config['activation'])
 
             # what is visualized
             self.label = self.config['filters']
 
         elif self.config['layer_type'] == "Dropout":
             self.layer = Dropout(
-                rate = self.config['Dropout_rate'])
+                rate=self.config['Dropout_rate'])
 
             # what is visualized
             self.label = self.config['Dropout_rate']
@@ -110,9 +110,9 @@ class Strato(object):
         """
 
         # if the weights can be detected, save them
-        
+
         weights = self.layer.get_weights()
-        
+
         wname = self.path + ".weights"
 
         if exists(wname):
@@ -125,7 +125,7 @@ class Strato(object):
         pickle.dump(self.config, open(iname, "wb"))
 
     def load(self):
-        
+
         wname = self.path + ".weights"
         self.weights = pickle.load(open(wname, "rb"))
 
@@ -133,6 +133,6 @@ class Strato(object):
         self.config = pickle.load(open(iname, "rb"))
 
         self.assemble()
-        
+
     def resetWeights(self):
         raise NotImplemented()
