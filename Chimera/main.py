@@ -256,12 +256,20 @@ def create_window():
     load_b.grid(row=1, column=2, sticky="W", padx=4)
 
     # losses menu
-    global loss_choice
     losses = [i for i in Model.losses.keys()]
     loss_choice = StringVar(master)
     loss_choice.set(losses[0])
-    menu_losses = OptionMenu(master, loss_choice, *losses, command=lambda loss_name = loss_choice.get(): nnet.set_loss(loss_name))
+    menu_losses = OptionMenu(master, loss_choice, *losses,
+                             command=lambda loss_name = loss_choice.get(): nnet.set_loss(loss_name))
     menu_losses.grid(row=2, column=1, sticky="W")
+
+    # optimizers menu
+    optimizers = [i for i in Model.optimizers.keys()]
+    opt_choice = StringVar(master)
+    opt_choice.set(optimizers[0])
+    menu_opt = OptionMenu(master, opt_choice, *optimizers,
+                          command=lambda opt_name = opt_choice.get(): nnet.set_optimizer(opt_name))
+    menu_opt.grid(row = 3, column=1, sticky="W")
 
     # initialize empty list for layer repr
     layer_repr = []

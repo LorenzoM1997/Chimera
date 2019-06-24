@@ -21,12 +21,21 @@ losses = {
     'SparseCategoricalCrossentropy': tf.keras.losses.SparseCategoricalCrossentropy(),
     }
 
+global optimizers
+optimizers = {
+    'Adadelta': tf.keras.optimizers.Adadelta,
+    'Adagrad': tf.keras.optimizers.Adagrad,
+    'Adam': tf.keras.optimizers.Adam,
+    'Adamax': tf.keras.optimizers.Adamax,
+    'RMSprop': tf.keras.optimizers.RMSprop,
+    'SGD': tf.keras.optimizers.SGD}
+
 class Chimera(object):
 
     def __init__(self):
 
         self.loss = losses['CategoricalCrossentropy']
-        self.optimizer = tf.keras.optimizers.Adam()
+        self.optimizer = optimizers['Adam']
 
         self.inputShape = None
         self.outputShape = None
@@ -259,6 +268,9 @@ class Chimera(object):
 
     def set_loss(self, loss_name):
         self.loss = losses[loss_name]
+
+    def set_optimizer(self, optimizer_name):
+        self.optimizer = optimizers[optimizer_name]
 
     def export(self, filepath):
 
