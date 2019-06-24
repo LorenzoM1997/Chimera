@@ -198,10 +198,10 @@ def create_window():
     master.minsize(1020, 620)
     master.geometry("1020x620")
     master['bg'] = '#fafafa'
-    master.columnconfigure(0, weight=0)
-    master.columnconfigure(1, weight=0)
-    master.columnconfigure(2, weight=1)
-    master.columnconfigure(3, weight=2)
+    master.columnconfigure(0, weight=1)
+    master.columnconfigure(1, weight=1)
+    master.columnconfigure(2, weight=2)
+    master.columnconfigure(3, weight=1)
     master.columnconfigure(4, weight=1)
     master.columnconfigure(5, weight=2)
 
@@ -231,7 +231,7 @@ def create_window():
     # entry for model name
     global modelname_e
     modelname_e = Entry(master)
-    modelname_e.grid(row=0, column=2, sticky="W")
+    modelname_e.grid(row=0, column=2, sticky="ew")
 
     # save button
     save_b = Button(master,
@@ -241,8 +241,11 @@ def create_window():
     save_b.grid(row=0, column=3, sticky="W", padx=4)
 
     # model menu
-    mypath = "models"
-    models = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+    load_model_l = Label(master, text="Saved models:",
+                         bg=master['bg'])
+    load_model_l.grid(row=1, column=1, sticky="E", padx=4)
+
+    models = [f for f in listdir("models") if isfile(join("models", f))]
     if models == []:
         models.append("")
     global menu_models
@@ -250,11 +253,11 @@ def create_window():
     model_choice.set(models[0])
     menu_models = OptionMenu(master, model_choice, *models,
                              command=lambda model_name=model_choice.get(): load_and_update(model_name))
-    menu_models.grid(row=1, column=2, sticky="ew")
+    menu_models.grid(row=1, column=2, sticky="ew",)
 
     # losses menu
     losses_l = Label(master, text="Losses:", bg=master['bg'])
-    losses_l.grid(row=2, column=1, sticky="E")
+    losses_l.grid(row=2, column=1, sticky="E", padx=4)
 
     global loss_choice
     losses = [i for i in Model.losses.keys()]
@@ -266,7 +269,7 @@ def create_window():
 
     # optimizers menu
     opt_l = Label(master, text="Optimizers:", bg=master['bg'])
-    opt_l.grid(row=3, column=1, sticky="E")
+    opt_l.grid(row=3, column=1, sticky="E", padx=4)
 
     global opt_choice
     optimizers = [i for i in Model.optimizers.keys()]
@@ -283,37 +286,53 @@ def create_window():
     addDense_b = Button(master,
                         text="Add Dense",
                         width=15,
+                        bg=color['Dense'],
                         command=lambda: add_layer("Dense"))
     addDense_b.grid(row=0, column=0)
     addConv1D_b = Button(master,
                          text="Add Conv1D",
                          width=15,
+                         bg=color['Conv1D'],
                          command=lambda: add_layer("Conv1D"))
     addConv1D_b.grid(row=1, column=0)
     addConv2D_b = Button(master,
                          text="Add Conv2D",
                          width=15,
+                         bg=color['Conv2D'],
                          command=lambda: add_layer("Conv2D"))
     addConv2D_b.grid(row=2, column=0)
     addDropout_b = Button(master,
                           text="Add Dropout",
                           width=15,
+                          bg=color['Dropout'],
                           command=lambda: add_layer("Dropout"))
     addDropout_b.grid(row=3, column=0)
 
-    global accuracy_l, loss_l
+    global input_l, labels_l, accuracy_l, loss_l
+    input_l = Label(master,
+                    text="No input data",
+                    font="Arial 11",
+                    bg=master['bg'],
+                    padx=16)
+    input_l.grid(row=0, column=5, sticky="W")
+    labels_l = Label(master,
+                     text="No labels",
+                     font="Arial 11",
+                     bg=master['bg'],
+                     padx=16)
+    labels_l.grid(row=1, column=5, sticky="W")
     accuracy_l = Label(master,
                        text="No accuracy data ",
                        font="Arial 11",
                        bg=master['bg'],
                        padx=16)
-    accuracy_l.grid(row=1, column=5, sticky="E")
+    accuracy_l.grid(row=2, column=5, sticky="W")
     loss_l = Label(master,
                    text="No loss data",
                    font="Arial 11",
                    bg=master['bg'],
                    padx=16)
-    loss_l.grid(row=2, column=5, sticky="E")
+    loss_l.grid(row=3, column=5, sticky="W")
 
     update_net()
     mainloop()
