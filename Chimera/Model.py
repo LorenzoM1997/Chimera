@@ -16,9 +16,13 @@ losses = {
     'Hinge': tf.keras.losses.Hinge(),
     'Huber': tf.keras.losses.Huber(),
     'KLDivergence': tf.keras.losses.KLDivergence(),
+    'LogCosh': tf.keras.losses.LogCosh(),
     'MeanAbsoluteError': tf.keras.losses.MeanAbsoluteError(),
     'MeanSquaredError': tf.keras.losses.MeanSquaredError(),
+    'Poisson': tf.keras.losses.Poisson(),
+    'Reduction': tf.keras.losses.Reduction(),
     'SparseCategoricalCrossentropy': tf.keras.losses.SparseCategoricalCrossentropy(),
+    'SquaredHinge': tf.keras.losses.SquaredHinge()
 }
 
 global optimizers
@@ -27,6 +31,8 @@ optimizers = {
     'Adagrad': tf.keras.optimizers.Adagrad,
     'Adam': tf.keras.optimizers.Adam,
     'Adamax': tf.keras.optimizers.Adamax,
+    'Ftrl': tf.keras.optimizers.Ftrl,
+    'Nadam': tf.keras.optimizers.Nadam,
     'RMSprop': tf.keras.optimizers.RMSprop,
     'SGD': tf.keras.optimizers.SGD}
 
