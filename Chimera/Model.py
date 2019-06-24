@@ -156,7 +156,7 @@ class Chimera(object):
         lastLayer.config['dense_units'] = self.outputShape
         lastLayer.assemble()
 
-    def fit(self, train_dataset, inputShape, outputShape, batch_size=1, epochs=10):
+    def fit(self, x, y, batch_size=1, epochs=10):
         """
         function to train the model given the input and labels
         Args:
@@ -168,10 +168,10 @@ class Chimera(object):
 
         # automatically detect input shape
         if self.inputShape is None or self.inputShape != inputShape:
-            self.inputShape = inputShape
+            self.inputShape = x.shape[0]
 
         if self.outputShape is None or self.outputShape != outputShape:
-            self.defineOutputShape(outputShape)
+            self.defineOutputShape(y.shape[0])
 
         # build the model
         self.build()
@@ -209,10 +209,16 @@ class Chimera(object):
         modelpath = os.path.join("models", name)
         if os.path.exists(modelpath):
             layerList = pickle.load(open(modelpath, "rb"))
+
+            # reset all the layer information
             self.layers = []
+            self.changeList = []
+
+            # append each layer
             for l in layerList:
                 s = Strato(name=l)
                 self.layers.append(s)
+                self.changeList.append(False)
 
     def save(self, name=""):
         """
@@ -235,3 +241,20 @@ class Chimera(object):
 
         modelpath = os.path.join("models", self.filename)
         pickle.dump(layerList, open(modelpath, "wb"))
+
+    def export(self, filepath):
+
+        # rebuild the model to be sure it's up to date
+        try:
+            self.build()
+        except:
+            raise RuntimeError()
+            return
+
+        # save the model in h5 format
+        self.model.save(
+            filepath,
+            overwrite=True,
+            include_optimizer=True,
+            save_format = "h5"
+        )
