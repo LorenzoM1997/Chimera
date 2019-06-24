@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 from tkinter import *
+from tkinter.messagebox import showerror
 from Layers import Strato
 from Model import Chimera
 import numpy as np
@@ -8,6 +9,7 @@ import os
 from os import listdir
 from os.path import isfile, join
 from dataManager import load_inputs, load_labels, prepare_data
+from ModelManager import load_model, select_export_filepath
 
 global globalPath
 globalPath = join(os.getcwd(), "Chimera")
@@ -61,7 +63,8 @@ def update_net():
         frame = Frame(master,
                       bg=color[l.config['layer_type']],
                       padx=32,
-                      pady=4)
+                      pady=4,
+                      width=60)
         frame.grid(row=n_row, column=2, columnspan=3, pady=2)
         layer_repr.append(frame)
 
@@ -99,13 +102,12 @@ def update_net():
 
         if ix < len(nnet.layers) - 1:
             # button to move up
-            up_b = Button(frame,
-                          image=upPhoto,
-                          text="up",
-                          command=lambda ix=ix: move_up(ix))
-            up_b.grid(row=n_row, column=4)
-            if ix == 0:
-                up_b['state'] = DISABLED
+            if ix > 0:
+                up_b = Button(frame,
+                              image=upPhoto,
+                              text="up",
+                              command=lambda ix=ix: move_up(ix))
+                up_b.grid(row=n_row, column=4)
 
             if ix < len(nnet.layers) -2:
                 # button to move down
@@ -126,24 +128,29 @@ def update_net():
         ix += 1
 
 
-"""
-function to add a layer to the network
-args:
-    layer_type (string):
-        "Dense"
-        "Conv1D"
-"""
+def import_model():
+    raise NotImplementedError()
 
+def export():
+    filepath = select_export_filepath()
+
+    try:
+        nnet.export(filepath)
+    except RuntimeError:
+        showerror("Error", "Could not build model.")
 
 def add_layer(layer_type):
+    """
+    function to add a layer to the network
+    args:
+        layer_type (string):
+    """
     nnet.add_layer(layer_type)
     # update the view of the network with the new layer
     update_net()
 
 
 def update_list_models():
-    global menu_models
-    global model_choice
     menu = menu_models["menu"]
     menu.delete(0, "end")
     mypath = "models"
@@ -154,24 +161,23 @@ def update_list_models():
 
 
 def save_and_update():
-    global modelname_e
     nnet.save(modelname_e.get())
     update_list_models()
 
 
 def load_and_update():
-    global model_choice
     nnet.load(model_choice.get())
     update_net()
 
 
 def fit():
     try:
-        train_dataset, inputShape, outputShape = prepare_data()
-    except ValueError:
+        train_examples, train_labels, test_examples, test_labels = prepare_data()
+    except RuntimeError:
+        print("data not selected")
         return
 
-    history_obj = nnet.fit(train_dataset, inputShape, outputShape)
+    history_obj = nnet.fit(train_examples, train_labels)
     accuracy = history_obj.history['accuracy'][-1]
     loss = history_obj.history['loss'][-1]
     accuracy_l['text'] = "Accuracy: " + str(accuracy)
@@ -204,14 +210,14 @@ def create_window():
 
     menubar = Menu(master)
     importMenu = Menu(menubar, tearoff=0)
-    importMenu.add_command(label="Import Model")
-    importMenu.add_command(label="Import Input",
-                           command = load_inputs)
-    importMenu.add_command(label="Import Labels",
-                           command = load_labels)
+    importMenu.add_command(label="Import Model", command = import_model)
+    importMenu.add_command(label="Import Input", command = load_inputs)
+    importMenu.add_command(label="Import Labels", command = load_labels)
+
+
     menubar.add_cascade(label="Import", menu=importMenu)
-    menubar.add_command(label="Train",
-                        command= fit)
+    menubar.add_command(label="Export", command=export)
+    menubar.add_command(label="Train", command=fit)
     master.config(menu=menubar)
 
     model_l = Label(master, text="Model name:",
