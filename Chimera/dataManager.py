@@ -42,3 +42,6 @@ def prepare_data():
         test_dataset = tf.data.Dataset.from_tensor_slices((test_examples, test_labels))
 
         return train_dataset, inputShape, outputShape
+    else:
+        showerror("Error", "You haven't selected data to train the model")
+        raise ValueError("data not selected")

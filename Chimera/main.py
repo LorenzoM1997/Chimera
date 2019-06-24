@@ -166,7 +166,11 @@ def load_and_update():
 
 
 def fit():
-    train_dataset, inputShape, outputShape = prepare_data()
+    try:
+        train_dataset, inputShape, outputShape = prepare_data()
+    except ValueError:
+        return
+
     history_obj = nnet.fit(train_dataset, inputShape, outputShape)
     accuracy = history_obj.history['accuracy'][-1]
     loss = history_obj.history['loss'][-1]
