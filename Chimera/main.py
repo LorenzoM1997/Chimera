@@ -48,16 +48,14 @@ def remove(ix):
 
 
 def update_net():
-    global master
     global layer_repr
-    global color
 
     for label in layer_repr:
         label.grid_forget()
 
     layer_repr = []
 
-    n_row = 2
+    n_row = 5
     ix = 0
 
     for l in nnet.layers:
@@ -66,7 +64,7 @@ def update_net():
                       padx=32,
                       pady=4,
                       width=60)
-        frame.grid(row=n_row, column=2, columnspan=3, pady=2)
+        frame.grid(row=n_row, column=1, columnspan=4, pady=2)
         layer_repr.append(frame)
 
         # label for layer type
@@ -128,6 +126,10 @@ def update_net():
         n_row += 1
         ix += 1
 
+    # set the selected item in loss menu and optimizer menu
+    loss_choice.set(nnet.loss_name)
+    opt_choice.set(nnet.optimizer_name)
+
 
 def import_model():
     raise NotImplementedError()
@@ -167,8 +169,8 @@ def save_and_update():
     update_list_models()
 
 
-def load_and_update():
-    nnet.load(model_choice.get())
+def load_and_update(model_name):
+    nnet.load(model_name)
     update_net()
 
 
@@ -224,52 +226,54 @@ def create_window():
 
     model_l = Label(master, text="Model name:",
                     bg=master['bg'])
-    model_l.grid(row=0, column=0, sticky="E", padx=4)
+    model_l.grid(row=0, column=1, sticky="E", padx=4)
 
     # entry for model name
     global modelname_e
     modelname_e = Entry(master)
-    modelname_e.grid(row=0, column=1, sticky="W")
+    modelname_e.grid(row=0, column=2, sticky="W")
 
     # save button
     save_b = Button(master,
                     image=savephoto,
                     text="save",
                     command=save_and_update)
-    save_b.grid(row=0, column=2, sticky="W", padx=4)
+    save_b.grid(row=0, column=3, sticky="W", padx=4)
 
     # model menu
     mypath = "models"
     models = [f for f in listdir(mypath) if isfile(join(mypath, f))]
     if models == []:
         models.append("")
-    global menu_models, model_choice
+    global menu_models
     model_choice = StringVar(master)
     model_choice.set(models[0])
-    menu_models = OptionMenu(master, model_choice, *models)
-    menu_models.grid(row=1, column=1, sticky="W")
-
-    # load button
-    load_b = Button(master,
-                    text="load",
-                    command=load_and_update)
-    load_b.grid(row=1, column=2, sticky="W", padx=4)
+    menu_models = OptionMenu(master, model_choice, *models, command = lambda model_name = model_choice.get(): load_and_update(model_name))
+    menu_models.grid(row=1, column=2, sticky="ew")
 
     # losses menu
+    losses_l = Label(master, text="Losses:", bg = master['bg'])
+    losses_l.grid(row=2, column=1, sticky="E")
+
+    global loss_choice
     losses = [i for i in Model.losses.keys()]
     loss_choice = StringVar(master)
-    loss_choice.set(losses[0])
+    loss_choice.set('CategoricalCrossentropy')
     menu_losses = OptionMenu(master, loss_choice, *losses,
                              command=lambda loss_name = loss_choice.get(): nnet.set_loss(loss_name))
-    menu_losses.grid(row=2, column=1, sticky="W")
+    menu_losses.grid(row=2, column=2, sticky="ew")
 
     # optimizers menu
+    opt_l = Label(master, text="Optimizers:", bg = master['bg'])
+    opt_l.grid(row=3, column=1, sticky="E")
+
+    global opt_choice
     optimizers = [i for i in Model.optimizers.keys()]
     opt_choice = StringVar(master)
-    opt_choice.set(optimizers[0])
+    opt_choice.set('Adam')
     menu_opt = OptionMenu(master, opt_choice, *optimizers,
                           command=lambda opt_name = opt_choice.get(): nnet.set_optimizer(opt_name))
-    menu_opt.grid(row = 3, column=1, sticky="W")
+    menu_opt.grid(row = 3, column=2, sticky="ew")
 
     # initialize empty list for layer repr
     layer_repr = []
@@ -279,33 +283,33 @@ def create_window():
                         text="Add Dense",
                         width=15,
                         command=lambda: add_layer("Dense"))
-    addDense_b.grid(row=2, column=0)
+    addDense_b.grid(row=0, column=0)
     addConv1D_b = Button(master,
                          text="Add Conv1D",
                          width=15,
                          command=lambda: add_layer("Conv1D"))
-    addConv1D_b.grid(row=3, column=0)
+    addConv1D_b.grid(row=1, column=0)
     addConv2D_b = Button(master,
                          text = "Add Conv2D",
                          width=15,
                          command=lambda: add_layer("Conv2D"))
-    addConv2D_b.grid(row = 4, column = 0)
+    addConv2D_b.grid(row=2, column = 0)
     addDropout_b =Button(master,
                          text = "Add Dropout",
                          width=15,
                          command=lambda: add_layer("Dropout"))
-    addDropout_b.grid(row = 5, column = 0)
+    addDropout_b.grid(row=3, column = 0)
 
     global accuracy_l, loss_l
     accuracy_l = Label(master,
                        text = "No accuracy data ",
-                       font = "Arial 12",
+                       font = "Arial 11",
                        bg = master['bg'],
                        padx = 16)
     accuracy_l.grid(row = 1, column = 5, sticky = "E")
     loss_l = Label(master,
                    text = "No loss data",
-                   font = "Arial 12",
+                   font = "Arial 11",
                    bg = master['bg'],
                    padx = 16)
     loss_l.grid(row = 2, column = 5, sticky = "E")

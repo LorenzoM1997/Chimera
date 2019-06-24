@@ -34,8 +34,8 @@ class Chimera(object):
 
     def __init__(self):
 
-        self.loss = losses['CategoricalCrossentropy']
-        self.optimizer = optimizers['Adam']
+        self.loss_name = 'CategoricalCrossentropy'
+        self.optimizer_name = 'Adam'
 
         self.inputShape = None
         self.outputShape = None
@@ -93,8 +93,8 @@ class Chimera(object):
         self.model.set_weights(self.weights)
 
         self.model.compile(
-            optimizer=self.optimizer,
-            loss=self.loss,
+            optimizer=optimizers[self.optimizer_name],
+            loss=losses[self.loss_name],
             metrics=['accuracy'])
 
     def checkLayerShape(self):
@@ -231,14 +231,18 @@ class Chimera(object):
 
         modelpath = os.path.join("models", name)
         if os.path.exists(modelpath):
-            layerList = pickle.load(open(modelpath, "rb"))
+            config = pickle.load(open(modelpath, "rb"))
+
+            # load the optimizer and loss
+            self.optimizer_name = config['optimizer_name']
+            self.loss_name = config['loss_name']
 
             # reset all the layer information
             self.layers = []
             self.changeList = []
 
             # append each layer
-            for l in layerList:
+            for l in config['layerList']:
                 s = Strato(name=l)
                 self.layers.append(s)
                 self.changeList.append(False)
@@ -262,15 +266,21 @@ class Chimera(object):
             l.save()
             layerList.append(l.name)
 
+        # create a dictionary to save
+        config = {'layerList': layerList,
+                  'optimizer_name': self.optimizer_name,
+                  'loss_name': self.loss_name}
+
+        # pickle the dictionary of configurations
         modelpath = os.path.join("models", self.filename)
-        pickle.dump(layerList, open(modelpath, "wb"))
+        pickle.dump(config, open(modelpath, "wb"))
 
 
     def set_loss(self, loss_name):
-        self.loss = losses[loss_name]
+        self.loss_name = loss_name
 
     def set_optimizer(self, optimizer_name):
-        self.optimizer = optimizers[optimizer_name]
+        self.optimizer_name = optimizer_name
 
     def export(self, filepath):
 
