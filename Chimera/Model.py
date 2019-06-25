@@ -176,14 +176,26 @@ class Chimera(object):
             self.changeList.pop(ix)
             self.changeList[ix] = True
 
-    def defineOutputShape(self, outputShape):
-        self.outputShape = outputShape
+    def defineOutputShape(self, y):
+        if self.outputShape == None:
+            if self.loss_name == 'SparseCategoricalCrossentropy':
+                # find the maximum, which correspond to the highest label
+                outputShape = y.max() + 1
+            elif self.loss_name == 'CategoricalCrossentropy':
+                if y.shape[1] == 1:
+                    raise ValueError("Labels of dimension 1 found, but CategoricalCrossentropy requires more than one class.")
+                else:
+                    outputShape = y.shape[1]
+            else:
+                outputShape = y.shape[1]
+            self.outputShape = outputShape
+            print("outputshape: %i" %self.outputShape)
 
-        # enforce the last layer shape to match the output shape
-        lastLayer = self.layers[-1]
-        lastLayer.config['layer_type'] = "Dense"
-        lastLayer.config['dense_units'] = self.outputShape
-        lastLayer.assemble()
+            # enforce the last layer shape to match the output shape
+            lastLayer = self.layers[-1]
+            lastLayer.config['layer_type'] = "Dense"
+            lastLayer.config['dense_units'] = self.outputShape
+            lastLayer.assemble()
 
     def fit(self, x, y, batch_size=1, epochs=10):
         """
@@ -199,8 +211,7 @@ class Chimera(object):
         if self.inputShape is None or self.inputShape != x.shape[1]:
             self.inputShape = x.shape[1]
 
-        if self.outputShape is None or self.outputShape != y.shape[1]:
-            self.defineOutputShape(y.shape[1])
+        self.defineOutputShape(y)
 
         # build the model
         self.build()
