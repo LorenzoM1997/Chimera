@@ -3,7 +3,7 @@ from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror
 import numpy as np
 import tensorflow as tf
-
+import ntpath
 
 def load_file():
     fname = askopenfilename(filetypes=(("Numpy files", "*.npy"),
@@ -11,14 +11,15 @@ def load_file():
     return fname
 
 
-def load_inputs():
+def load_inputs(input_l):
     fname = load_file()
     if fname:
         global x
         x = np.load(fname)
+    text_to_display = ntpath.basename(fname) + " (" + str(x.shape[0]) + " entries)"
+    input_l['text'] = text_to_display
 
-
-def load_labels():
+def load_labels(labels_l):
     fname = load_file()
     if fname:
         global y
@@ -29,6 +30,8 @@ def load_labels():
             shape = y.shape[1]
         except IndexError:
             y = np.reshape(y, (-1, 1))
+    text_to_display = ntpath.basename(fname) + " (" + str(y.shape[0]) + " entries)"
+    labels_l['text'] = text_to_display
 
 
 def prepare_data():

@@ -213,11 +213,37 @@ def create_window():
     removePhoto = PhotoImage(file=join(imgDir, "delete.png"))
     savephoto = PhotoImage(file=join(imgDir, "save.png"))
 
+    global input_l, labels_l, accuracy_l, loss_l
+    input_l = Label(master,
+                    text="No input data",
+                    font="Arial 11",
+                    bg=master['bg'],
+                    padx=12)
+    input_l.grid(row=0, column=5, sticky="W")
+    labels_l = Label(master,
+                     text="No labels",
+                     font="Arial 11",
+                     bg=master['bg'],
+                     padx=12)
+    labels_l.grid(row=1, column=5, sticky="W")
+    accuracy_l = Label(master,
+                       text="No accuracy data ",
+                       font="Arial 11",
+                       bg=master['bg'],
+                       padx=12)
+    accuracy_l.grid(row=2, column=5, sticky="W")
+    loss_l = Label(master,
+                   text="No loss data",
+                   font="Arial 11",
+                   bg=master['bg'],
+                   padx=12)
+    loss_l.grid(row=3, column=5, sticky="W")
+
     menubar = Menu(master)
     importMenu = Menu(menubar, tearoff=0)
     importMenu.add_command(label="Import Model", command=import_model)
-    importMenu.add_command(label="Import Input", command=load_inputs)
-    importMenu.add_command(label="Import Labels", command=load_labels)
+    importMenu.add_command(label="Import Input", command=lambda value=input_l: load_inputs(value))
+    importMenu.add_command(label="Import Labels", command=lambda value=labels_l: load_labels(value))
 
     menubar.add_cascade(label="Import", menu=importMenu)
     menubar.add_command(label="Export", command=export)
@@ -248,7 +274,7 @@ def create_window():
     models = [f for f in listdir("models") if isfile(join("models", f))]
     if models == []:
         models.append("")
-    global menu_models
+    global menu_models, model_choice
     model_choice = StringVar(master)
     model_choice.set(models[0])
     menu_models = OptionMenu(master, model_choice, *models,
@@ -307,32 +333,6 @@ def create_window():
                           bg=color['Dropout'],
                           command=lambda: add_layer("Dropout"))
     addDropout_b.grid(row=3, column=0)
-
-    global input_l, labels_l, accuracy_l, loss_l
-    input_l = Label(master,
-                    text="No input data",
-                    font="Arial 11",
-                    bg=master['bg'],
-                    padx=16)
-    input_l.grid(row=0, column=5, sticky="W")
-    labels_l = Label(master,
-                     text="No labels",
-                     font="Arial 11",
-                     bg=master['bg'],
-                     padx=16)
-    labels_l.grid(row=1, column=5, sticky="W")
-    accuracy_l = Label(master,
-                       text="No accuracy data ",
-                       font="Arial 11",
-                       bg=master['bg'],
-                       padx=16)
-    accuracy_l.grid(row=2, column=5, sticky="W")
-    loss_l = Label(master,
-                   text="No loss data",
-                   font="Arial 11",
-                   bg=master['bg'],
-                   padx=16)
-    loss_l.grid(row=3, column=5, sticky="W")
 
     update_net()
     mainloop()
